@@ -95,11 +95,13 @@ def main():
     parser = argparse.ArgumentParser(description="UC-X Policy Q&A")
     parser.add_argument("--docs-dir", default="../data/policy-documents",
                         help="Directory containing policy .txt files")
+    parser.add_argument("--output", help="Path to write Q&A log")
     args = parser.parse_args()
 
     documents = retrieve_documents(args.docs_dir)
     print("UC-X Policy Q&A — type your questions below (type 'exit' to quit)\n")
 
+    log_lines = []
     while True:
         try:
             q = input("> ").strip()
@@ -111,6 +113,13 @@ def main():
             break
         answer = answer_question(q, documents)
         print(answer + "\n")
+        if args.output:
+            log_lines.append(f"Q: {q}\nA: {answer}\n")
+
+    if args.output and log_lines:
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.writelines(log_lines)
+        print(f"Q&A log written to {args.output}")
 
 
 if __name__ == "__main__":
